@@ -8,6 +8,9 @@ const parseCookies = (req, res, next) => {
   let value = '';
   let isKey = true;
   for (let i = 0; i < cookieString.length; i++) {
+    if (cookieString[i] === ' ') {
+      continue;
+    }
     if (cookieString[i] === '=') {
       isKey = false;
       i++;
