@@ -1,9 +1,8 @@
 const parseCookies = (req, res, next) => {
   if (req.headers.cookie) {
     let cookieObj = {};
-    //THIS MAY BE WRONG VVV
     let cookieString = req.headers.cookie;
-    //take the cookie text
+
     let key = '';
     let value = '';
     let isKey = true;
