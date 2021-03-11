@@ -20,7 +20,6 @@ module.exports.createSession = (req, res, next) => {
           console.log('session :' + session.hash);
           req.cookies.shortlyid = session.hash;
           next();
-          done();
         })
         .catch((err) => {
           next();
