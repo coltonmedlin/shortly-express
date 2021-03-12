@@ -135,3 +135,11 @@ form input[type=text], form input[type=password] {
 .creator .message {
   clear: both;
 }
+
+.logout {
+  background-color:lightgray;
+}
+.logout:hover {
+  background-color: black;
+  color: white;
+}

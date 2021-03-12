@@ -19,18 +19,17 @@ app.use(cookieParser);
 app.use(Auth.createSession);
 
 
-
-app.get('/',
+app.get('/', Auth.verify,
   (req, res) => {
     res.render('index');
   });
 
-app.get('/create',
+app.get('/create', Auth.verify,
   (req, res) => {
     res.render('index');
   });
 
-app.get('/links',
+app.get('/links', Auth.verify,
   (req, res, next) => {
     models.Links.getAll()
       .then(links => {
@@ -41,7 +40,7 @@ app.get('/links',
       });
   });
 
-app.post('/links',
+app.post('/links', Auth.verify,
   (req, res, next) => {
     var url = req.body.url;
     if (!models.Links.isValidUrl(url)) {
@@ -88,6 +87,7 @@ app.get('/login',
 
 app.post('/login',
   (req, res, next) => {
+    let data = {};
     //request to database for username
     models.Users.get({username: req.body.username})
     //check the attempted password against the password in the database user using user .compare
@@ -95,16 +95,23 @@ app.post('/login',
         if (user === undefined) {
           throw new Error('user does not exist');
         }
+        data.userId = user.id;
         return models.Users.compare(req.body.password, user.password, user.salt);
       }).then((success) => {
         //if they match, return 200 with redirect
         if (success) {
-          res.status(200);
-          res.redirect('/');
+          return models.Sessions.update({hash: req.session.hash}, {userId: data.userId});
         } else {
           throw new Error('wrong password');
         }
-      }).catch((err) => {
+      })
+      .then((session) => {
+        //console.log('session:', session);
+        res.status(200);
+        res.redirect('/');
+      })
+      .catch((err) => {
+        //console.log(err);
         res.status(401);
         res.redirect('/login');
         res.end();

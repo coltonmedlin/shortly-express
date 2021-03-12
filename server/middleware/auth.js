@@ -62,11 +62,8 @@ module.exports.createSession = (req, res, next) => {
           //if it does, then create a session object and move on
         } else {
           req.session = { hash };
-          if (response.userId) {
-            req.session.userId = response.userId;
-            return models.Users.get({id: response.userId});
-          }
-          return;
+          req.session.userId = response.userId;
+          return models.Users.get({id: response.userId});
         }
       })
       .then((user) => {
@@ -82,11 +79,20 @@ module.exports.createSession = (req, res, next) => {
         next(err);
       });
   }
-
-
 };
 
 /************************************************************/
 // Add additional authentication middleware functions below
 /************************************************************/
 
+module.exports.verify = (req, res, next) => {
+  //check the session object
+  let session = req.session;
+  //if it has no user, redirect
+  if (!req.session.user) {
+    res.redirect('/login');
+  } else {
+    //otherwise continue
+    next();
+  }
+};
