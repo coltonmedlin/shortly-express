@@ -62,8 +62,18 @@ module.exports.createSession = (req, res, next) => {
           //if it does, then create a session object and move on
         } else {
           req.session = { hash };
+          if (response.userId) {
+            req.session.userId = response.userId;
+            return models.Users.get({id: response.userId});
+          }
           return;
         }
+      })
+      .then((user) => {
+        if (user) {
+          req.session.user = user;
+        }
+        return;
       })
       .then(() => {
         next();
