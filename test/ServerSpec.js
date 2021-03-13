@@ -242,6 +242,23 @@ describe('', function() {
       });
     });
 
+    it('Users that do exist are redirected to index', function(done) {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:4568/login',
+        'json': {
+          'username': 'Samantha',
+          'password': 'Samantha'
+        }
+      };
+
+      request(options, function(error, res, body) {
+        if (error) { return done(error); }
+        expect(res.headers.location).to.equal('/');
+        done();
+      });
+    });
+
     it('Users that do not exist are kept on login page', function(done) {
       var options = {
         'method': 'POST',
@@ -581,9 +598,30 @@ describe('', function() {
         });
       });
     });
+
+    it('Redirects to login page when the user signs out', function(done) {
+      addUser(function(err, res, body) {
+        if (err) { return done(err); }
+
+        requestWithSession('http://127.0.0.1:4568/logout', function(error, res, resBody) {
+          if (error) { return done(error); }
+          expect(res.req.path).to.equal('/login');
+          done();
+        });
+      });
+    });
   });
 
+
   describe('Privileged Access:', function() {
+
+    it('Does not Redirect if a user tries to access the links page and is not signed in', function(done) {
+      request('http://127.0.0.1:4568/', function(error, res, body) {
+        if (error) { return done(error); }
+        expect(res.req.path).to.equal('/login');
+        done();
+      });
+    });
 
     it('Redirects to login page if a user tries to access the main page and is not signed in', function(done) {
       request('http://127.0.0.1:4568/', function(error, res, body) {
