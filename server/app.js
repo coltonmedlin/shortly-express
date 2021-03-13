@@ -144,6 +144,19 @@ app.post('/signup',
   });
 
 
+app.get('/logout', (req, res, next)=>{
+//delete the hash from the table
+  models.Sessions.delete({hash: req.session.hash})
+  //delete the cookie
+    .then(()=>{
+      res.clearCookie('shortlyid');
+      return;
+    })
+    .then(()=>{
+      //re route the user to login page
+      res.redirect('/login');
+    });
+});
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
