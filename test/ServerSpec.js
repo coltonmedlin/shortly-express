@@ -671,7 +671,18 @@ describe('', function() {
           'password': 'Vivian'
         }
       };
-      requestWithSession(options, done);
+      requestWithSession(options, () => {
+        var loginOptions = {
+          'method': 'POST',
+          'followAllRedirects': true,
+          'uri': 'http://127.0.0.1:4568/login',
+          'json': {
+            'username': 'Vivian',
+            'password': 'Vivian'
+          }
+        };
+        requestWithSession(loginOptions, done);
+      });
     });
 
     afterEach(function(done) {
@@ -691,7 +702,7 @@ describe('', function() {
 
         requestWithSession(options, function(error, res, body) {
           if (error) { return done(error); }
-          expect(res.statusCode).to.equal(302);
+          expect(res.statusCode).to.equal(404);
           done();
         });
       });
